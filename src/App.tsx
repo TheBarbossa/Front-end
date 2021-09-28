@@ -1,5 +1,5 @@
 import React, {
-  useState, useRef, useEffect, useCallback,
+  useState,
 } from 'react';
 import './App.scss';
 import Button from './components/Button/Button';
@@ -20,21 +20,7 @@ const App = () => {
   const [inputValue, setInputValue] = useState('');
   const [todo, setTodo] = useState(initialTodo);
 
-  const inputElement = useRef<HTMLInputElement>(null);
-
-  const focusInput = () => {
-    if (!inputElement.current) {
-      return;
-    }
-
-    inputElement.current.focus();
-  };
-
-  useEffect(() => {
-    focusInput();
-  }, []);
-
-  const addTodo = useCallback(() => {
+  const addTodo = () => {
     if (!inputValue) {
       return;
     }
@@ -50,7 +36,7 @@ const App = () => {
 
     setInputValue('');
     setTodo(clonedArray);
-  }, [inputValue]);
+  };
 
   const completeTask = (index: number) => {
     const clonedTodo = [...todo];
@@ -82,25 +68,16 @@ const App = () => {
           type="text"
           placeholder="Buy milk..."
           value={inputValue}
-          ref={inputElement}
           onChange={(event) => {
             setInputValue(event.target.value);
           }}
         />
         <Button
           type="submit"
-          onClick={focusInput}
         >
           Submit
         </Button>
       </form>
-      <div>
-        <Button
-          onClick={focusInput}
-        >
-          Focus Element
-        </Button>
-      </div>
       <div className="itemWrapper">
         { todo.map(({ id, title, completed }, index) => (
           <div className={`item ${completed && 'completed'}`} key={id}>

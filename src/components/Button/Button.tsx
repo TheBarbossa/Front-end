@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import './Button.scss';
 
 type ButtonProps = {
-  onClick: () => void;
+  onClick?: () => void;
   type?: 'submit' | 'button'
   disabled?: boolean
   variation?: 'solid' | 'outlined'
