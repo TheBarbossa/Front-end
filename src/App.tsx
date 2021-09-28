@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, {
+  useState, useRef, useEffect, useCallback,
+} from 'react';
 import './App.scss';
+import Button from './components/Button/Button';
 
 const generateId = () => Math.floor(Math.random() * 1000000000);
 
@@ -7,6 +10,7 @@ const initialTodo = [
   {
     id: generateId(),
     title: 'Buy Milk',
+    completed: false,
   },
 ];
 
@@ -16,7 +20,21 @@ const App = () => {
   const [inputValue, setInputValue] = useState('');
   const [todo, setTodo] = useState(initialTodo);
 
-  const addTodo = () => {
+  const inputElement = useRef<HTMLInputElement>(null);
+
+  const focusInput = () => {
+    if (!inputElement.current) {
+      return;
+    }
+
+    inputElement.current.focus();
+  };
+
+  useEffect(() => {
+    focusInput();
+  }, []);
+
+  const addTodo = useCallback(() => {
     if (!inputValue) {
       return;
     }
@@ -26,37 +44,83 @@ const App = () => {
       {
         id: generateId(),
         title: inputValue,
+        completed: false,
       },
     ];
 
     setInputValue('');
     setTodo(clonedArray);
+  }, [inputValue]);
+
+  const completeTask = (index: number) => {
+    const clonedTodo = [...todo];
+
+    clonedTodo[index].completed = true;
+
+    setTodo(clonedTodo);
+  };
+
+  const deleteTask = (index: number) => {
+    const clonedTodo = [...todo];
+
+    clonedTodo.splice(index, 1);
+
+    setTodo(clonedTodo);
   };
 
   return (
     <div className="container">
-      <div className="inputWrapper">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          addTodo();
+        }}
+        className="inputWrapper"
+      >
         <input
           className="input"
           type="text"
           placeholder="Buy milk..."
           value={inputValue}
+          ref={inputElement}
           onChange={(event) => {
             setInputValue(event.target.value);
           }}
         />
-        <button
-          type="button"
-          className="button"
-          onClick={addTodo}
+        <Button
+          type="submit"
+          onClick={focusInput}
         >
-          submit
-        </button>
+          Submit
+        </Button>
+      </form>
+      <div>
+        <Button
+          onClick={focusInput}
+        >
+          Focus Element
+        </Button>
       </div>
       <div className="itemWrapper">
-        { todo.map(({ id, title }) => (
-          <div className="item" key={id}>
+        { todo.map(({ id, title, completed }, index) => (
+          <div className={`item ${completed && 'completed'}`} key={id}>
+            <div />
             {title}
+            <div className="buttonWrapper">
+              <Button
+                onClick={() => completeTask(index)}
+                disabled={completed}
+              >
+                Complete
+              </Button>
+
+              <Button
+                onClick={() => deleteTask(index)}
+                variation="outlined"
+              >
+                Delete
+              </Button>
+            </div>
           </div>
         )) }
       </div>
@@ -66,7 +130,9 @@ const App = () => {
 
 export default App;
 
-// 2 opcijas 1) izdzēst 2) pabeigt
-// uz dzēšanu ņemam ārā, lai lietotājs neredz
-// uz pabeigts pielikam kādu CSS klāt (fona krāsa cita, nosvītrots teksts)
-// un var arī izpausties ar citām funkcijām, kā, piemēram, nerādīt pogu pabeigt ja ir jau pabeigts
+// Uztaisāt Todo kartiņas komponenti
+// tad kad tu viņu complīto tad jāparāda zaļās toast, ka ir parādīts
+// ja izdzēs tad jāparāda, ka ir izdzēsts
+// un pēc tam kad ir izdzēsts vai pabeigts uzdevums, vajag iefokusēt input elementu
+
+// toas: https://www.npmjs.com/package/react-toastify
