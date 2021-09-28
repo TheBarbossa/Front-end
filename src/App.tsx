@@ -135,4 +135,4 @@ export default App;
 // ja izdzēs tad jāparāda, ka ir izdzēsts
 // un pēc tam kad ir izdzēsts vai pabeigts uzdevums, vajag iefokusēt input elementu
 
-// toas: https://www.npmjs.com/package/react-toastify
+// toast: https://www.npmjs.com/package/react-toastify
